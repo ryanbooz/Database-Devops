@@ -1,0 +1,18 @@
+{
+  "version": "2.0",
+  "name": "Database-Devops",
+  "id": "41abf4da-97de-4d44-a5fc-51d4e676d14e",
+  "databaseType": "PostgreSql",
+  "development": {
+    "scriptsFolder": "./schema-model"
+  },
+  "deployment": {
+    "flywayConfFiles": [
+      "./flyway.conf"
+    ],
+    "generateUndoScripts": true
+  },
+  "schemas": [
+    "public"
+  ]
+}

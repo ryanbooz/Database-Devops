@@ -1,0 +1,179 @@
+name: 'PostgreSQL Dev Build & Test'
+ 
+on:
+  push:
+    branches:
+      - '!main'
+      
+env:
+    SQLFLUFF_DIALECT: postgres
+    DOCKER_IMAGE: redgate/flyway
+    SCHEMAS: public
+ 
+jobs:
+  Continuous-Integration-Build:
+    name: Continuous Integration Build
+    runs-on: ubuntu-20.04
+    environment: Build
+ 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.0.0
+               
+      - name: Continuous Integration Flyway Clean Migrate
+        run: >-
+          docker run --rm
+          --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
+          "${{ env.DOCKER_IMAGE }}"
+          -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
+          -url="${{ secrets.DB_BUILD_URL }}"
+          -user="${{ secrets.DB_BUILD_USERNAME }}"
+          -password="${{ secrets.DB_BUILD_PASSWORD }}"
+          -cleanDisabled=false clean migrate -schemas="${{ env.SCHEMAS }}"
+    
+      - name: Flyway Info
+        run: >-
+          docker run --rm
+          --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
+          "${{ env.DOCKER_IMAGE }}"
+          -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
+          -url="${{ secrets.DB_BUILD_URL }}"
+          -user="${{ secrets.DB_BUILD_USERNAME }}"
+          -password="${{ secrets.DB_BUILD_PASSWORD }}" 
+          info -schemas="${{ env.SCHEMAS }}"
+ 
+ 
+      - name: Flyway code Check
+        run: >-
+          docker run --rm \
+            --volume ${{ github.workspace }}/migrations:/flyway/sql:ro \
+            --volume ${{ github.workspace }}/reports:/flyway/reports \
+            -e ${{ secrets.FLYWAY_LICENSE_KEY }} \
+            "${{ env.DOCKER_IMAGE }}" \
+            -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}" \
+            # -url="${{ secrets.DB_PROD_URL }}" \
+            # -user="${{ secrets.DB_PROD_USERNAME }}" \
+            # -password="${{ secrets.DB_PROD_PASSWORD }}" \
+            # -baselineOnMigrate=true 
+            check -code -schemas="${{ env.SCHEMAS }}" -outOfOrder=true -connectRetries=10 \
+            -check.buildUrl="${{ secrets.DB_BUILD_URL }}" \
+            -check.buildUser="${{ secrets.DB_BUILD_USERNAME }}" \
+            -check.buildPassword="${{ secrets.DB_BUILD_PASSWORD }}" \
+            -check.reportFilename="/flyway/reports/report.html"
+            
+      - name: Get summary
+        id: summary
+        run: echo ::set-output name=summary::$(build/flyway-summary.sh src/database/reports/report.html.json) >> $GITHUB_OUTPUT
+ 
+      - name: Upload report
+        uses: actions/upload-artifact@v3
+        with:
+          name: Database Report
+          path: reports/
+ 
+        
+  # Deploy-Test:
+  #   name: Deploy Test
+  #   needs: Continuous-Integration-Build
+  #   runs-on: ubuntu-20.04
+  #   environment: Staging
+  #   steps:
+  #     - uses: actions/checkout@v3.0.0
+      
+   
+  #     - run: >-    
+  #         docker run --rm
+  #         --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
+  #         "${{ env.DOCKER_IMAGE }}"
+  #         -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
+  #         -url="${{ secrets.DB_TEST_URL }}"
+  #         -user="${{ secrets.DB_TEST_USERNAME }}"
+  #         -password="${{ secrets.DB_TEST_PASSWORD }}"  
+  #         info -schemas="${{ env.SCHEMAS }}"
+  #     - run: >-
+  #         docker run --rm
+  #         --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
+  #         "${{ env.DOCKER_IMAGE }}"
+  #         -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
+  #         -url="${{ secrets.DB_TEST_URL }}"
+  #         -user="${{ secrets.DB_TEST_USERNAME }}"
+  #         -password="${{ secrets.DB_TEST_PASSWORD }}"   
+  #         migrate -baselineOnMigrate=true -schemas="${{ env.SCHEMAS }}" -outOfOrder=true 
+  #     - run: >-
+  #         docker run --rm
+  #         --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
+  #         "${{ env.DOCKER_IMAGE }}"
+  #         -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
+  #         -url="${{ secrets.DB_TEST_URL }}"
+  #         -user="${{ secrets.DB_TEST_USERNAME }}"
+  #         -password="${{ secrets.DB_TEST_PASSWORD }}"   
+  #         info -schemas="${{ env.SCHEMAS }}"
+ 
+  # Deploy-Prod:
+  #   name: Deploy Prod
+  #   needs: Deploy-Test
+  #   runs-on: ubuntu-20.04   
+  #   environment: Production
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3.0.0
+      
+  #     - name: Flyway Check
+  #       run: >-
+  #         docker run --rm \
+  #           --volume ${{ github.workspace }}/migrations:/flyway/sql:ro \
+  #           --volume ${{ github.workspace }}/reports:/flyway/reports \
+  #           -e ${{ secrets.FLYWAY_LICENSE_KEY }} \
+  #           "${{ env.DOCKER_IMAGE }}" \
+  #           -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}" \
+  #           -url="${{ secrets.DB_PROD_URL }}" \
+  #           -user="${{ secrets.DB_PROD_USERNAME }}" \
+  #           -password="${{ secrets.DB_PROD_PASSWORD }}" \
+  #           -baselineOnMigrate=true check -changes -code -drift -dryrun -schemas="${{ env.SCHEMAS }}" -outOfOrder=true -connectRetries=10 \
+  #           -check.buildUrl="${{ secrets.DB_BUILD_URL }}" \
+  #           -check.buildUser="${{ secrets.DB_BUILD_USERNAME }}" \
+  #           -check.buildPassword="${{ secrets.DB_BUILD_PASSWORD }}" \
+  #           -check.reportFilename="/flyway/reports/report_prod.html"
+            
+  #     - name: Get summary
+  #       id: summary
+  #       run: echo ::set-output name=summary::$(build/flyway-summary.sh src/database/reports/report.html.json) >> $GITHUB_OUTPUT
+
+  #     - name: Upload report
+  #       uses: actions/upload-artifact@v3.0.0
+  #       with:
+  #         name: Database Report
+  #         path: reports/
+          
+  #     - name: Prod Info before migrate
+  #       run: >-           
+  #         docker run --rm
+  #         --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
+  #         "${{ env.DOCKER_IMAGE }}"
+  #         -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}" 
+  #         -url="${{ secrets.DB_PROD_URL }}"
+  #         -user="${{ secrets.DB_PROD_USERNAME }}"
+  #         -password="${{ secrets.DB_PROD_PASSWORD }}" 
+  #         info -schemas="${{ env.SCHEMAS }}"
+        
+  #     - name: Migrate Prod
+  #       run: >-
+  #         docker run --rm
+  #         --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
+  #         "${{ env.DOCKER_IMAGE }}"
+  #         -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}" 
+  #         -url="${{ secrets.DB_PROD_URL }}"
+  #         -user="${{ secrets.DB_PROD_USERNAME }}"
+  #         -password="${{ secrets.DB_PROD_PASSWORD }}" 
+  #         migrate -baselineOnMigrate=true -schemas="${{ env.SCHEMAS }}" -outOfOrder=true
+          
+  #     - name: Prod Info after migrate success
+  #       run: >-
+  #         docker run --rm
+  #         --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
+  #         "${{ env.DOCKER_IMAGE }}"
+  #         -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}" 
+  #         -url="${{ secrets.DB_PROD_URL }}"
+  #         -user="${{ secrets.DB_PROD_USERNAME }}"
+  #         -password="${{ secrets.DB_PROD_PASSWORD }}"
+  #         info -schemas="${{ env.SCHEMAS }}"
