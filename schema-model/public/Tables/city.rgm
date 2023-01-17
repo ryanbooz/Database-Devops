@@ -27,3 +27,15 @@ table "public"."city" {
   )
 }
 
+foreignKey "public"."city"."city_country_id_fkey" {
+  columns = [
+    "country_id"
+  ]
+  referencedTable = "public"."country"
+  referencedColumns = [
+    "country_id"
+  ]
+  onUpdate = CASCADE
+  onDelete = RESTRICT
+}
+
