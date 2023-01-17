@@ -1,6 +1,7 @@
 name: 'PostgreSQL Dev Build & Test'
  
 on:
+  create:
   push:
     branches:
       - '*'
