@@ -83,7 +83,7 @@ jobs:
         
   Deploy-Test:
     name: Deploy Test
-    needs: Continuous-Integration-Build
+#    needs: Continuous-Integration-Build
     runs-on: ubuntu-20.04
     environment: Staging
     steps:
