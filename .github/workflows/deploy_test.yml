@@ -1,0 +1,54 @@
+name: 'PostgreSQL GitHub DevOps Pipeline'
+ 
+on:
+  pull_request:
+    branches:
+      - main
+      
+env:
+    SQLFLUFF_DIALECT: postgres
+    DOCKER_IMAGE: redgate/flyway
+    SCHEMAS: public
+ 
+jobs:
+  Deploy-Test:
+    name: Deploy Test
+    runs-on: ubuntu-20.04
+    environment: Staging
+    steps:
+      - uses: actions/checkout@v3.0.0
+      
+   
+      - name: Test Info before migration
+        run: >-    
+          docker run --rm
+          --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
+          "${{ env.DOCKER_IMAGE }}"
+          -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
+          -url="${{ secrets.DB_TEST_URL }}"
+          -user="${{ secrets.DB_TEST_USERNAME }}"
+          -password="${{ secrets.DB_TEST_PASSWORD }}"  
+          info -schemas="${{ env.SCHEMAS }}"
+
+      - name: Migrate Test
+        run: >-
+          docker run --rm
+          --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
+          "${{ env.DOCKER_IMAGE }}"
+          -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
+          -url="${{ secrets.DB_TEST_URL }}"
+          -user="${{ secrets.DB_TEST_USERNAME }}"
+          -password="${{ secrets.DB_TEST_PASSWORD }}"   
+          migrate -baselineOnMigrate=true -schemas="${{ env.SCHEMAS }}" -outOfOrder=true 
+
+      - name: Test info after migration
+        run: >-
+          docker run --rm
+          --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
+          "${{ env.DOCKER_IMAGE }}"
+          -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
+          -url="${{ secrets.DB_TEST_URL }}"
+          -user="${{ secrets.DB_TEST_USERNAME }}"
+          -password="${{ secrets.DB_TEST_PASSWORD }}"   
+          info -schemas="${{ env.SCHEMAS }}"
+ 
