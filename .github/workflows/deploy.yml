@@ -11,47 +11,47 @@ env:
     SCHEMAS: public
  
 jobs:
-  Continuous-Integration-Build:
-    name: Continuous Integration Build
-    runs-on: ubuntu-20.04
-    environment: Build
+#   Continuous-Integration-Build:
+#     name: Continuous Integration Build
+#     runs-on: ubuntu-20.04
+#     environment: Build
  
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3.0.0
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3.0.0
                
-      - name: Continuous Integration Flyway Clean Migrate
-        run: >-
-          docker run --rm
-          --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
-          "${{ env.DOCKER_IMAGE }}"
-          -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
-          -url="${{ secrets.DB_BUILD_URL }}"
-          -user="${{ secrets.DB_BUILD_USERNAME }}"
-          -password="${{ secrets.DB_BUILD_PASSWORD }}"
-          -cleanDisabled=false clean migrate -schemas="${{ env.SCHEMAS }}"
+#       - name: Continuous Integration Flyway Clean Migrate
+#         run: >-
+#           docker run --rm
+#           --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
+#           "${{ env.DOCKER_IMAGE }}"
+#           -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
+#           -url="${{ secrets.DB_BUILD_URL }}"
+#           -user="${{ secrets.DB_BUILD_USERNAME }}"
+#           -password="${{ secrets.DB_BUILD_PASSWORD }}"
+#           -cleanDisabled=false clean migrate -schemas="${{ env.SCHEMAS }}"
     
-      - name: Flyway Info
-        run: >-
-          docker run --rm
-          --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
-          "${{ env.DOCKER_IMAGE }}"
-          -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
-          -url="${{ secrets.DB_BUILD_URL }}"
-          -user="${{ secrets.DB_BUILD_USERNAME }}"
-          -password="${{ secrets.DB_BUILD_PASSWORD }}" 
-          info -schemas="${{ env.SCHEMAS }}"
+#       - name: Flyway Info
+#         run: >-
+#           docker run --rm
+#           --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
+#           "${{ env.DOCKER_IMAGE }}"
+#           -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
+#           -url="${{ secrets.DB_BUILD_URL }}"
+#           -user="${{ secrets.DB_BUILD_USERNAME }}"
+#           -password="${{ secrets.DB_BUILD_PASSWORD }}" 
+#           info -schemas="${{ env.SCHEMAS }}"
  
-      - name: Flyway Info Production
-        run: >-
-          docker run --rm
-          --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
-          "${{ env.DOCKER_IMAGE }}"
-          -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
-          -url="${{ secrets.DB_PROD_URL }}"
-          -user="${{ secrets.DB_PROD_USERNAME }}" 
-          -password="${{ secrets.DB_PROD_PASSWORD }}"
-          info -schemas="${{ env.SCHEMAS }}"
+#       - name: Flyway Info Production
+#         run: >-
+#           docker run --rm
+#           --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
+#           "${{ env.DOCKER_IMAGE }}"
+#           -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
+#           -url="${{ secrets.DB_PROD_URL }}"
+#           -user="${{ secrets.DB_PROD_USERNAME }}" 
+#           -password="${{ secrets.DB_PROD_PASSWORD }}"
+#           info -schemas="${{ env.SCHEMAS }}"
  
       # - name: Flyway Check
       #   run: >-
@@ -70,15 +70,15 @@ jobs:
       #       -check.buildPassword="${{ secrets.DB_BUILD_PASSWORD }}" \
       #       -check.reportFilename="/flyway/reports/report.html"
             
-      - name: Get summary
-        id: summary
-        run: echo ::set-output name=summary::$(build/flyway-summary.sh src/database/reports/report.html.json) >> $GITHUB_OUTPUT
+      # - name: Get summary
+      #   id: summary
+      #   run: echo ::set-output name=summary::$(build/flyway-summary.sh src/database/reports/report.html.json) >> $GITHUB_OUTPUT
  
-      - name: Upload report
-        uses: actions/upload-artifact@v3
-        with:
-          name: Database Report
-          path: reports/
+      # - name: Upload report
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: Database Report
+      #     path: reports/
  
         
   Deploy-Test:
@@ -127,22 +127,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3.0.0
       
-      - name: Flyway Check
-        run: >-
-          docker run --rm \
-            --volume ${{ github.workspace }}/migrations:/flyway/sql:ro \
-            --volume ${{ github.workspace }}/reports:/flyway/reports \
-            -e ${{ secrets.FLYWAY_LICENSE_KEY }} \
-            "${{ env.DOCKER_IMAGE }}" \
-            -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}" \
-            -url="${{ secrets.DB_PROD_URL }}" \
-            -user="${{ secrets.DB_PROD_USERNAME }}" \
-            -password="${{ secrets.DB_PROD_PASSWORD }}" \
-            -baselineOnMigrate=true check -changes -code -drift -dryrun -schemas="${{ env.SCHEMAS }}" -outOfOrder=true -connectRetries=10 \
-            -check.buildUrl="${{ secrets.DB_BUILD_URL }}" \
-            -check.buildUser="${{ secrets.DB_BUILD_USERNAME }}" \
-            -check.buildPassword="${{ secrets.DB_BUILD_PASSWORD }}" \
-            -check.reportFilename="/flyway/reports/report_prod.html"
+      # - name: Flyway Check
+      #   run: >-
+      #     docker run --rm \
+      #       --volume ${{ github.workspace }}/migrations:/flyway/sql:ro \
+      #       --volume ${{ github.workspace }}/reports:/flyway/reports \
+      #       -e ${{ secrets.FLYWAY_LICENSE_KEY }} \
+      #       "${{ env.DOCKER_IMAGE }}" \
+      #       -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}" \
+      #       -url="${{ secrets.DB_PROD_URL }}" \
+      #       -user="${{ secrets.DB_PROD_USERNAME }}" \
+      #       -password="${{ secrets.DB_PROD_PASSWORD }}" \
+      #       -baselineOnMigrate=true check -changes -code -drift -dryrun -schemas="${{ env.SCHEMAS }}" -outOfOrder=true -connectRetries=10 \
+      #       -check.buildUrl="${{ secrets.DB_BUILD_URL }}" \
+      #       -check.buildUser="${{ secrets.DB_BUILD_USERNAME }}" \
+      #       -check.buildPassword="${{ secrets.DB_BUILD_PASSWORD }}" \
+      #       -check.reportFilename="/flyway/reports/report_prod.html"
             
       - name: Get summary
         id: summary
