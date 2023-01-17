@@ -1,4 +1,4 @@
-name: 'PostgreSQL GitHub DevOps Pipeline'
+name: 'PostgreSQL Test Deploy'
  
 on:
   pull_request:
