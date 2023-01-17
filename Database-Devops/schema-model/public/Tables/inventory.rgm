@@ -1,0 +1,29 @@
+table "public"."inventory" {
+  primaryKey = {
+    columns = [
+      "inventory_id"
+    ]
+    name = "inventory_pkey"
+    objectType = primaryKey
+  }
+  columns = (
+    column "inventory_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "film_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "store_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "last_update" {
+      type = timestamp with time zone
+      null = NOT NULL
+      default = now()
+    }
+  )
+}
+

@@ -1,0 +1,26 @@
+table "public"."film_category" {
+  primaryKey = {
+    columns = [
+      "film_id"
+      "category_id"
+    ]
+    name = "film_category_pkey"
+    objectType = primaryKey
+  }
+  columns = (
+    column "film_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "category_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "last_update" {
+      type = timestamp(2) with time zone
+      null = NOT NULL
+      default = now()
+    }
+  )
+}
+

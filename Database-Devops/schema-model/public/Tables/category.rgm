@@ -1,0 +1,24 @@
+table "public"."category" {
+  primaryKey = {
+    columns = [
+      "category_id"
+    ]
+    name = "category_pkey"
+    objectType = primaryKey
+  }
+  columns = (
+    column "category_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "name" {
+      type = text
+      null = NOT NULL
+    }
+    column "last_update" {
+      type = timestamp(2) with time zone
+      default = now()
+    }
+  )
+}
+

@@ -1,0 +1,36 @@
+table "public"."payment" {
+  primaryKey = {
+    columns = [
+      "payment_id"
+    ]
+    name = "payment_pkey"
+    objectType = primaryKey
+  }
+  columns = (
+    column "payment_id" {
+      type = bigint
+      null = NOT NULL
+    }
+    column "customer_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "staff_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "rental_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "amount" {
+      type = numeric(5,2)
+      null = NOT NULL
+    }
+    column "payment_date" {
+      type = timestamp with time zone
+      null = NOT NULL
+    }
+  )
+}
+

@@ -1,0 +1,29 @@
+table "public"."city" {
+  primaryKey = {
+    columns = [
+      "city_id"
+    ]
+    name = "city_pkey"
+    objectType = primaryKey
+  }
+  columns = (
+    column "city_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "city" {
+      type = text
+      null = NOT NULL
+    }
+    column "country_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "last_update" {
+      type = timestamp(2) with time zone
+      null = NOT NULL
+      default = now()
+    }
+  )
+}
+

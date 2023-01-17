@@ -1,0 +1,40 @@
+table "public"."rental" {
+  primaryKey = {
+    columns = [
+      "rental_id"
+    ]
+    name = "rental_pkey"
+    objectType = primaryKey
+  }
+  columns = (
+    column "rental_id" {
+      type = bigint
+      null = NOT NULL
+    }
+    column "rental_date" {
+      type = timestamp with time zone
+      null = NOT NULL
+    }
+    column "inventory_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "customer_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "return_date" {
+      type = timestamp with time zone
+    }
+    column "staff_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "last_update" {
+      type = timestamp with time zone
+      null = NOT NULL
+      default = now()
+    }
+  )
+}
+

@@ -1,0 +1,28 @@
+table "public"."actor" {
+  primaryKey = {
+    columns = [
+      "actor_id"
+    ]
+    name = "actor_pkey"
+    objectType = primaryKey
+  }
+  columns = (
+    column "actor_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "first_name" {
+      type = text
+      null = NOT NULL
+    }
+    column "last_name" {
+      type = text
+      null = NOT NULL
+    }
+    column "last_update" {
+      type = timestamp(2) with time zone
+      default = now()
+    }
+  )
+}
+

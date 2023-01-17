@@ -1,0 +1,64 @@
+table "public"."customer" {
+  primaryKey = {
+    columns = [
+      "customer_id"
+    ]
+    name = "customer_pkey"
+    objectType = primaryKey
+  }
+  columns = (
+    column "customer_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "store_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "first_name" {
+      type = text
+      null = NOT NULL
+    }
+    column "last_name" {
+      type = text
+      null = NOT NULL
+    }
+    column "email" {
+      type = text
+    }
+    column "address_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "activebool" {
+      type = boolean
+      null = NOT NULL
+      default = true
+    }
+    column "create_date" {
+      type = date
+      null = NOT NULL
+      default = CURRENT_DATE
+    }
+    column "last_update" {
+      type = timestamp(2) with time zone
+      default = now()
+    }
+    column "active" {
+      type = integer
+    }
+  )
+}
+
+foreignKey "public"."customer"."customer_address_id_fkey" {
+  columns = [
+    "address_id"
+  ]
+  referencedTable = "public"."address"
+  referencedColumns = [
+    "address_id"
+  ]
+  onUpdate = CASCADE
+  onDelete = RESTRICT
+}
+

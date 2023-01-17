@@ -1,0 +1,43 @@
+table "public"."address" {
+  primaryKey = {
+    columns = [
+      "address_id"
+    ]
+    name = "address_pkey"
+    objectType = primaryKey
+  }
+  columns = (
+    column "address_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "address" {
+      type = text
+      null = NOT NULL
+    }
+    column "address2" {
+      type = text
+    }
+    column "district" {
+      type = text
+      null = NOT NULL
+    }
+    column "city_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "postal_code" {
+      type = text
+    }
+    column "phone" {
+      type = text
+      null = NOT NULL
+    }
+    column "last_update" {
+      type = timestamp(2) with time zone
+      null = NOT NULL
+      default = now()
+    }
+  )
+}
+

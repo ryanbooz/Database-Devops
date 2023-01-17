@@ -1,0 +1,90 @@
+table "public"."film" {
+  primaryKey = {
+    columns = [
+      "film_id"
+    ]
+    name = "film_pkey"
+    objectType = primaryKey
+  }
+  columns = (
+    column "film_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "title" {
+      type = text
+      null = NOT NULL
+    }
+    column "description" {
+      type = text
+    }
+    column "release_year" {
+      type = public.year
+    }
+    column "language_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "original_language_id" {
+      type = integer
+    }
+    column "rental_duration" {
+      type = smallint
+      null = NOT NULL
+      default = 3
+    }
+    column "rental_rate" {
+      type = numeric(4,2)
+      null = NOT NULL
+      default = 4.99
+    }
+    column "length" {
+      type = smallint
+    }
+    column "replacement_cost" {
+      type = numeric(5,2)
+      null = NOT NULL
+      default = 19.99
+    }
+    column "rating" {
+      type = public.mpaa_rating
+      default = 'G'::public.mpaa_rating
+    }
+    column "last_update" {
+      type = timestamp(2) with time zone
+      default = now()
+    }
+    column "special_features" {
+      type = text[]
+    }
+    column "fulltext" {
+      type = tsvector
+      null = NOT NULL
+    }
+  )
+}
+
+foreignKey "public"."film"."film_language_id_fkey" {
+  columns = [
+    "language_id"
+  ]
+  referencedTable = "public"."language"
+  referencedColumns = [
+    "language_id"
+  ]
+  onUpdate = CASCADE
+  onDelete = RESTRICT
+}
+
+foreignKey "public"."film"."film_original_language_id_fkey" {
+  columns = [
+    "original_language_id"
+  ]
+  referencedTable = "public"."language"
+  referencedColumns = [
+    "language_id"
+  ]
+  onUpdate = CASCADE
+  onDelete = RESTRICT
+}
+

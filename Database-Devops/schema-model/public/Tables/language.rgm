@@ -1,0 +1,25 @@
+table "public"."language" {
+  primaryKey = {
+    columns = [
+      "language_id"
+    ]
+    name = "language_pkey"
+    objectType = primaryKey
+  }
+  columns = (
+    column "language_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "name" {
+      type = character(20)
+      null = NOT NULL
+    }
+    column "last_update" {
+      type = timestamp with time zone
+      null = NOT NULL
+      default = now()
+    }
+  )
+}
+

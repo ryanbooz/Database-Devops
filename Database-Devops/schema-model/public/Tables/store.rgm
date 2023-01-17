@@ -1,0 +1,29 @@
+table "public"."store" {
+  primaryKey = {
+    columns = [
+      "store_id"
+    ]
+    name = "store_pkey"
+    objectType = primaryKey
+  }
+  columns = (
+    column "store_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "manager_staff_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "address_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "last_update" {
+      type = timestamp with time zone
+      null = NOT NULL
+      default = now()
+    }
+  )
+}
+

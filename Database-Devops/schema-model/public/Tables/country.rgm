@@ -1,0 +1,25 @@
+table "public"."country" {
+  primaryKey = {
+    columns = [
+      "country_id"
+    ]
+    name = "country_pkey"
+    objectType = primaryKey
+  }
+  columns = (
+    column "country_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "country" {
+      type = text
+      null = NOT NULL
+    }
+    column "last_update" {
+      type = timestamp with time zone
+      null = NOT NULL
+      default = now()
+    }
+  )
+}
+

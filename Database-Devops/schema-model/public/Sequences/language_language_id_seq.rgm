@@ -1,0 +1,11 @@
+sequence "public"."language_language_id_seq" {
+  type = integer
+  increment = 1
+  minValue = 1
+  maxValue = 2147483647
+  start = 1
+  cache = 1
+  cycle = NO CYCLE
+  ownedBy = "public"."language"."language_id"
+}
+
