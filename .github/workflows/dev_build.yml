@@ -34,7 +34,7 @@ jobs:
     
       - name: Flyway Info
         run: >-
-          docker run --rm
+          docker run 
           --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
           "${{ env.DOCKER_IMAGE }}"
           -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
@@ -46,7 +46,7 @@ jobs:
  
       - name: Flyway code Check
         run: >-
-          docker run --rm \
+          docker run   \
             --volume ${{ github.workspace }}/migrations:/flyway/sql:ro \
             --volume ${{ github.workspace }}/reports:/flyway/reports \
             -e ${{ secrets.FLYWAY_LICENSE_KEY }} \
