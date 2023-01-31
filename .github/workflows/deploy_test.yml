@@ -32,7 +32,7 @@ jobs:
 
       - name: Migrate Test
         run: >-
-          docker run --rm
+          docker run 
           --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
           "${{ env.DOCKER_IMAGE }}"
           -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
@@ -43,7 +43,7 @@ jobs:
 
       - name: Test info after migration
         run: >-
-          docker run --rm
+          docker run 
           --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
           "${{ env.DOCKER_IMAGE }}"
           -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}"
@@ -51,4 +51,3 @@ jobs:
           -user="${{ secrets.DB_TEST_USERNAME }}"
           -password="${{ secrets.DB_TEST_PASSWORD }}"   
           info -schemas="${{ env.SCHEMAS }}"
- 

@@ -21,22 +21,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3.0.0
       
-      # - name: Flyway Check
-      #   run: >-
-      #     docker run --rm \
-      #       --volume ${{ github.workspace }}/migrations:/flyway/sql:ro \
-      #       --volume ${{ github.workspace }}/reports:/flyway/reports \
-      #       -e ${{ secrets.FLYWAY_LICENSE_KEY }} \
-      #       "${{ env.DOCKER_IMAGE }}" \
-      #       -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}" \
-      #       -url="${{ secrets.DB_PROD_URL }}" \
-      #       -user="${{ secrets.DB_PROD_USERNAME }}" \
-      #       -password="${{ secrets.DB_PROD_PASSWORD }}" \
-      #       -baselineOnMigrate=true check -changes -code -drift -dryrun -schemas="${{ env.SCHEMAS }}" -outOfOrder=true -connectRetries=10 \
-      #       -check.buildUrl="${{ secrets.DB_BUILD_URL }}" \
-      #       -check.buildUser="${{ secrets.DB_BUILD_USERNAME }}" \
-      #       -check.buildPassword="${{ secrets.DB_BUILD_PASSWORD }}" \
-      #       -check.reportFilename="/flyway/reports/report_prod.html"
+      - name: Flyway Check
+        run: >-
+          docker run --rm \
+            --volume ${{ github.workspace }}/migrations:/flyway/sql:ro \
+            --volume ${{ github.workspace }}/reports:/flyway/reports \
+            -e ${{ secrets.FLYWAY_LICENSE_KEY }} \
+            "${{ env.DOCKER_IMAGE }}" \
+            -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}" \
+            -url="${{ secrets.DB_PROD_URL }}" \
+            -user="${{ secrets.DB_PROD_USERNAME }}" \
+            -password="${{ secrets.DB_PROD_PASSWORD }}" \
+            -baselineOnMigrate=true check -changes -code -drift -dryrun -schemas="${{ env.SCHEMAS }}" -outOfOrder=true -connectRetries=10 \
+            -check.buildUrl="${{ secrets.DB_BUILD_URL }}" \
+            -check.buildUser="${{ secrets.DB_BUILD_USERNAME }}" \
+            -check.buildPassword="${{ secrets.DB_BUILD_PASSWORD }}" \
+            -check.reportFilename="/flyway/reports/report_prod.html"
             
       - name: Get summary
         id: summary
@@ -50,7 +50,7 @@ jobs:
           
       - name: Prod Info before migrate
         run: >-           
-          docker run --rm
+          docker run 
           --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
           "${{ env.DOCKER_IMAGE }}"
           -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}" 
@@ -61,7 +61,7 @@ jobs:
         
       - name: Migrate Prod
         run: >-
-          docker run --rm
+          docker run 
           --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
           "${{ env.DOCKER_IMAGE }}"
           -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}" 
@@ -72,7 +72,7 @@ jobs:
           
       - name: Prod Info after migrate success
         run: >-
-          docker run --rm
+          docker run 
           --volume ${{ github.workspace }}/migrations:/flyway/sql:ro
           "${{ env.DOCKER_IMAGE }}"
           -licenseKey="${{ secrets.FLYWAY_LICENSE_KEY }}" 
