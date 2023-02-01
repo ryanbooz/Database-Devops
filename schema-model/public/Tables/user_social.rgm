@@ -1,0 +1,18 @@
+table "public"."user_social" {
+  columns = (
+    column "user_id" {
+      type = integer
+      null = NOT NULL
+    }
+    column "twitter_handle" {
+      type = text
+    }
+    column "facebook_handle" {
+      type = text
+    }
+    column "mastodon" {
+      type = text
+    }
+  )
+}
+
